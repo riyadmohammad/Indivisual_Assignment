@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableBusshedules extends Migration
+class CreateBusesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,16 @@ class CreateTableBusshedules extends Migration
      */
     public function up()
     {
-        Schema::create('busshedules', function (Blueprint $table) {
+        Schema::create('buses', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->string('operator');
+            $table->integer('seat_row');
+            $table->integer('seat_column');
+            $table->string('location');
+            $table->string('departure');
             $table->string('arrival');
-            $table->string('depature');
-            $table->string('route');
-            $table->integer('seat_rows');
-            $table->integer('seat_columns');
+            $table->string('rout');
             $table->timestamps();
         });
     }
@@ -32,6 +34,6 @@ class CreateTableBusshedules extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('busshedules');
+        Schema::dropIfExists('buses');
     }
 }

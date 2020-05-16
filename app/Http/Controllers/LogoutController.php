@@ -3,50 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\User;
 
-class RegisterController extends Controller
+class LogoutController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $req)
     {
-        return view('reg');
-    }
-    public function insert(Request $req)
-    {
-
-      // echo $req;
-
-        $user = new User();
-        $user->name     =$req->name;
-        $user->email    =$req->email;
-        $user->password    =$req->password;
-        $user->role   ="busmanager";
-        $user->registerd     ="registerd";
-        $user->validated   =1;
-        $user->company    =$req->company;
-        $user->save();
-
+        //
+        $req->session()->flush();
         return redirect()->route('login');
-
-        /* if($s){
-			return redirect()->route('login');
-		}else{
-			return redirect()->back();
-		} */
     }
-
-
-
-
-
-
-
-
 
     /**
      * Show the form for creating a new resource.

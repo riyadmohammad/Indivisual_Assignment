@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\User;
+use App\Counter;
 use Validator;
-class LoginController extends Controller
+class CounterController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,8 +14,9 @@ class LoginController extends Controller
      */
     public function index()
     {
-        return view('login.index');
+        //
 
+        return view('manager.addCounter');
     }
 
     /**
@@ -25,7 +26,11 @@ class LoginController extends Controller
      */
     public function create()
     {
+        //view counter
 
+        $all = Counter::all();
+
+        return view('manager.viewCounter', compact('all'));
     }
 
     /**
@@ -36,54 +41,30 @@ class LoginController extends Controller
      */
     public function store(Request $request)
     {
-        //validation
+        //
         $validation = Validator::make($request->all(), [
-			'email'=>'required',
-			'password'=>'required'
+
+			'name'=>'required|unique:counters',
+			'operator'=>'required',
+			'email'=>'required|email|unique:counters',
+			'location'=>'required'
         ]);
 
         if($validation->fails()){
 			return back()
 					->with('errors', $validation->errors())
 					->withInput();
-		}
+        }
 
-        //database finding
-        $find = User::where('email', $request->email)
-                ->where('password', $request->password)
-                ->first();
+        $counter = new Counter();
 
-        //all user
+        $counter->name =$request->name;
+        $counter->operator =$request->operator;
+        $counter->email =$request->email;
+        $counter->location =$request->location;
+        $counter->save();
 
-
-         if($find != null){
-
-            if($find->role == "admin"){
-
-                $request->session()->put('uname', $find->name);
-                $request->session()->put('uemail', $find->email);
-                $request->session()->put('uid', $find->id);
-
-                return redirect()->route('admin_home');
-            }
-
-            if($find->role == "manager" && $find->validated == 1){
-                $request->session()->put('uname', $find->name);
-                $request->session()->put('uemail', $find->email);
-                $request->session()->put('uid', $find->id);
-
-                return redirect()->route('manager_home');
-            }
-
-            else{
-                $request->session()->flash('msg', 'invalid username/password');
-                return redirect()->route('login');
-            }
-
-    	}else{
-            $request->session()->flash('msg', 'invalid username/password');
-            return redirect()->route('login');
-    	}
+        return redirect()->back();
     }
 
     /**
@@ -92,11 +73,9 @@ class LoginController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function dataStore(Request $request)
+    public function show($id)
     {
-
-
-
+        //
     }
 
     /**
@@ -131,5 +110,10 @@ class LoginController extends Controller
     public function destroy($id)
     {
         //
+
+        $destroy = Counter::destroy($id);
+
+        return redirect()->back();
+
     }
 }

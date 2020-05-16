@@ -3,17 +3,27 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-class HomeController extends Controller
+use App\User;
+use Validator;
+class AdminHomeController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $req)
     {
-        return view('home');
+        //
+
+        $all = User::Where('role', 'manager')->get();
+
+        if($req->session()->has('uname')){
+			return view('admin.index', ['all'=>$all]);
+		}else{
+			return redirect()->route('login');
+		}
+
     }
 
     /**
@@ -24,6 +34,7 @@ class HomeController extends Controller
     public function create()
     {
         //
+        return view('admin.addManager');
     }
 
     /**
@@ -35,6 +46,31 @@ class HomeController extends Controller
     public function store(Request $request)
     {
         //
+        $validation = Validator::make($request->all(), [
+
+			'name'=>'required',
+			'email'=>'required|email|unique:users',
+			'password'=>'required',
+			'company'=>'required'
+        ]);
+
+        if($validation->fails()){
+			return back()
+					->with('errors', $validation->errors())
+					->withInput();
+        }
+
+        $user = new User();
+
+        $user->name =$request->name;
+        $user->email =$request->email;
+        $user->password =$request->password;
+        $user->company =$request->company;
+        $user->role ="manager";
+        $user->validated = 1;
+        $user->save();
+
+        return redirect()->back();
     }
 
     /**
@@ -80,5 +116,8 @@ class HomeController extends Controller
     public function destroy($id)
     {
         //
+
+        $delete = User::destroy($id);
+        return redirect()->back();
     }
 }
